@@ -30,12 +30,3 @@ function sortByPageNumber(root) {
 }
 
 sortByPageNumber.call(this, this.bookmarkRoot);
-
-//app.getPath("app", "javascript");
-// app.addToolButton({
-// cName: "atbToolButton1",
-// oIcon: oIcon,
-// cExec: "atbTask1();",
-// cTooltext: "My toolbar button 1",
-// nPos: 0
-// });
