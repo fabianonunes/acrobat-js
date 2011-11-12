@@ -3,27 +3,26 @@
 function sortByPageNumber(root) {
 
 	var returnTo = this.pageNum
-	, chd = root.children
-	, stack = []
-	, i, bk;
+		, chd = root.children
+		, stack = []
+		, names = {}
+		, key, value, pageNames;
 
 	if(!chd) { return; }
 
-	for(i = -1; bk = chd[++i];){
-		bk.execute();
-		bk.pageNum = this.pageNum;		
-		stack.push(bk);
-		bk.children && sortByPageNumber(bk);
+	for(key = -1; value = chd[++key];){
+		value.execute();
+		value.pageNum = this.pageNum;		
+		stack.push(value);
+		value.children && sortByPageNumber(value);
 	}
 
 	stack.sort(function(a, b){ return a.pageNum - b.pageNum; });
 
-	var names = {}, pageNames;
-
-	for(i = -1; bk = stack[++i];){
-		names[bk.pageNum] || (pageNames = names[bk.pageNum] = {});
-		!pageNames[bk.name] && root.insertChild(bk, chd.length);
-		pageNames[bk.name] = true;
+	for(key = -1; value = stack[++key];){
+		names[value.pageNum] || (pageNames = names[value.pageNum] = {});
+		pageNames[value.name] || root.insertChild(value, chd.length);
+		pageNames[value.name] = true;
 	}
 
 	this.pageNum = returnTo;
