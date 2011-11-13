@@ -12,7 +12,6 @@ function sortBkm(root) {
 		bkm.execute();
 		bkm.pageNum = this.pageNum;
 		bkm.order = key;
-		console.println(bkm.pageNum + ": " + bkm.name)
 		names[bkm.pageNum] = {};
 		bkm.children && sortBkm.call(this, bkm);
 	}
@@ -25,9 +24,9 @@ function sortBkm(root) {
 	for(key = -1; bkm = chd[++key];){
 		if(names[bkm.pageNum][bkm.name] && !bkm.children){
 			bkm.remove();
-		}  else {
-			root.insertChild(bkm, chd.length);
+			continue;
 		}
+		root.insertChild(bkm, chd.length);
 		names[bkm.pageNum][bkm.name] = true;
 	}
 
