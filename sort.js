@@ -1,10 +1,8 @@
 
-
-function sortByPageNumber(root) {
+function sortBkm(root) {
 
 	var returnTo = this.pageNum
 		, chd = root.children
-		, stack = []
 		, names = {}
 		, key, bkm;
 
@@ -12,15 +10,19 @@ function sortByPageNumber(root) {
 
 	for(key = -1; bkm = chd[++key];){
 		bkm.execute();
-		bkm.pageNum = this.pageNum;		
-		stack.push(bkm);
-		bkm.children && sortByPageNumber(bkm);
+		bkm.pageNum = this.pageNum;
+		bkm.order = key;
+		console.println(bkm.pageNum + ": " + bkm.name)
 		names[bkm.pageNum] = {};
+		bkm.children && sortBkm.call(this, bkm);
 	}
 
-	stack.sort(function(a, b){ return a.pageNum - b.pageNum; });
+	chd.sort(function(a, b){
+		var p = a.pageNum - b.pageNum;
+		return p ? p : a.order - b.order;
+	});
 
-	for(key = -1; bkm = stack[++key];){
+	for(key = -1; bkm = chd[++key];){
 		if(names[bkm.pageNum][bkm.name] && !bkm.children){
 			bkm.remove();
 		}  else {
@@ -33,4 +35,21 @@ function sortByPageNumber(root) {
 
 }
 
-sortByPageNumber.call(this, this.bookmarkRoot);
+app.addMenuItem({ 
+	cName: "sortBkm", 
+	cUser: "Ordenar Marcadores",
+	cParent: "Tools", 
+	cEnable: "event.rc = (event.target != null);",
+	cExec: "sortBkm.call(this, this.bookmarkRoot);",
+	nPos: 0 
+});
+
+app.addToolButton({
+	cName: "sortBkmButton", 
+	cLabel: "Ordenar Marcadores",
+	cParent: "Tools", 
+	cEnable: "event.rc = (event.target != null);",
+	cExec: "sortBkm.call(this, this.bookmarkRoot);",
+	nPos: -1 
+});	
+
