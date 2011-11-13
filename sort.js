@@ -34,21 +34,24 @@ function sortBkm(root) {
 
 }
 
+var cEnable = "event.rc = (event.target != null);"
+	, cExec = "sortBkm.call(this, this.bookmarkRoot);"
+	, cLabel = "Ordenar Marcadores";
+
 app.addMenuItem({ 
 	cName: "sortBkm", 
-	cUser: "Ordenar Marcadores",
+	cUser: cLabel,
 	cParent: "Tools", 
-	cEnable: "event.rc = (event.target != null);",
-	cExec: "sortBkm.call(this, this.bookmarkRoot);",
+	cEnable: cEnable,
+	cExec: cExec,
 	nPos: 0 
 });
 
 app.addToolButton({
 	cName: "sortBkmButton", 
-	cLabel: "Ordenar Marcadores",
-	cParent: "Tools", 
-	cEnable: "event.rc = (event.target != null);",
-	cExec: "sortBkm.call(this, this.bookmarkRoot);",
+	cLabel: cLabel,
+	cEnable: cEnable,
+	cExec: cExec,
 	nPos: -1 
 });	
 
