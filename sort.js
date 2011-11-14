@@ -8,7 +8,7 @@ function sortBkm(root) {
 
 	if(!chd) { return; }
 
-	for(key = -1; bkm = chd[++key];){
+	for(key = 0; bkm = chd[key++];){
 		bkm.execute();
 		bkm.pageNum = this.pageNum;
 		bkm.order = key;
@@ -21,7 +21,7 @@ function sortBkm(root) {
 		return p ? p : a.order - b.order;
 	});
 
-	for(key = -1; bkm = chd[++key];){
+	for(key = 0; bkm = chd[key++];){
 		if(names[bkm.pageNum][bkm.name] && !bkm.children){
 			bkm.remove();
 			continue;
@@ -54,4 +54,3 @@ app.addToolButton({
 	cExec: cExec,
 	nPos: -1 
 });	
-
