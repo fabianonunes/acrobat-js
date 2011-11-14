@@ -1,33 +1,37 @@
+/*
+ acrobat-js - http://github.com/fabianonunes/acrobat-js
+ Copyright (c) 2011, Fabiano Nunes
+ Released under the BSD License.
+*/
 
 function sortBkm(root) {
 
 	var returnTo = this.pageNum
 		, chd = root.children
 		, names = {}
-		, key, bkm;
+		, key, bm;
 
 	if(!chd) { return; }
 
-	for(key = 0; bkm = chd[key++];){
-		bkm.execute();
-		bkm.pageNum = this.pageNum;
-		bkm.order = key;
-		names[bkm.pageNum] = {};
-		bkm.children && sortBkm.call(this, bkm);
+	for(key = 0; bm = chd[key++];){
+		bm.execute();
+		bm.pageNum = this.pageNum;
+		bm.order = key;
+		names[bm.pageNum] = {};
+		bm.children && sortBkm.call(this, bm);
 	}
 
 	chd.sort(function(a, b){
-		var p = a.pageNum - b.pageNum;
-		return p ? p : a.order - b.order;
+		return a.pageNum - b.pageNum || a.order - b.order;
 	});
 
-	for(key = 0; bkm = chd[key++];){
-		if(names[bkm.pageNum][bkm.name] && !bkm.children){
-			bkm.remove();
+	for(key = 0; bm = chd[key++];){
+		if(names[bm.pageNum][bm.name] && !bm.children){
+			bm.remove();
 			continue;
 		}
-		root.insertChild(bkm, chd.length);
-		names[bkm.pageNum][bkm.name] = true;
+		root.insertChild(bm, chd.length);
+		names[bm.pageNum][bm.name] = true;
 	}
 
 	this.pageNum = returnTo;

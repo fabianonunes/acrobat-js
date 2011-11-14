@@ -1,3 +1,9 @@
+/*
+ acrobat-js - http://github.com/fabianonunes/acrobat-js
+ Copyright (c) 2011, Fabiano Nunes
+ Released under the BSD License.
+*/
+
 this.insertPages ({ 
 	nPage: this.numPages-1, 
 	cPath: '/c/status6.pdf'
