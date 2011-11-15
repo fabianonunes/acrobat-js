@@ -3,6 +3,7 @@
  Copyright (c) 2011, Fabiano Nunes
  Released under the BSD License.
 */
+
 var AcrobatJs = {
 
 	paths : {
@@ -12,17 +13,13 @@ var AcrobatJs = {
 	
 	insertDoc : app.trustedFunction(function(path){
 		app.beginPriv();
-		this.insertPages ({ 
+		this.insertPages({ 
 			nPage: this.numPages-1, 
 			cPath: path
 		});
 		this.pageNum = this.numPages-1;
 		app.endPriv();
 	}),
-
-	addCert1 : function(){
-		AcrobatJs.insertDoc(AcrobatJs.paths.cert1);
-	},
 
 	addCert6 : function(){
 
@@ -66,11 +63,12 @@ var AcrobatJs = {
 		}
 
 		this.pageNum = returnTo;
+
 	},
 
 	initialize : function(){
 		
-		Utils.bindAll(AcrobatJs);
+		Utils.stickAll(AcrobatJs);
 
 		var cEnable = "event.rc = (event.target != null);"
 			, cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);"
@@ -107,7 +105,7 @@ var AcrobatJs = {
 			cUser: "Certidão - Status &1",
 			cParent: "Tools", 
 			cEnable: cEnable,
-			cExec: "AcrobatJs.addCert1();",
+			cExec: "AcrobatJs.insertDoc(AcrobatJs.paths.cert1);",
 			nPos: 0 
 		});		
 
@@ -117,16 +115,16 @@ var AcrobatJs = {
 
 var Utils = {
 
-	bind : function bind(func) {
+	stick : function(func) {
 		return function() {
 			return func.apply(event.target, Array.prototype.slice.call(arguments));
-		};
+		}
 	},
 
-	bindAll : function(obj) {
+	stickAll : function(obj) {
 		for (var key in obj) {
 			if(Utils.isFunction(obj[key])){
-				obj[key] = Utils.bind(obj[key]);
+				obj[key] = Utils.stick(obj[key]);
 			}
 		}
 	},
