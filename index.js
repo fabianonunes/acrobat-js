@@ -4,6 +4,25 @@
  Released under the BSD License.
 */
 
+var Utils = {
+
+	stick : function(func) {
+		return function() {
+			return func.apply(event.target, Array.prototype.slice.call(arguments));
+		}
+	},
+
+	stickAll : function(obj) {
+		for (var b in obj) Utils.isFunction(obj[b]) && (obj[b] = Utils.stick(obj[b]))
+	},
+
+	isFunction : function(obj) {
+		return Object.prototype.toString.call(obj) == '[object Function]';
+	}
+
+};
+
+
 var AcrobatJs = {
 
 	paths : {
@@ -28,7 +47,7 @@ var AcrobatJs = {
 		var f = this.getField('numproc')
 			, mask = /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/;
 
-		f.value = mask.exec(this.documentFileName) || 'Digite o número do processo';
+		f.value = mask.exec(this.documentFileName) || 'Digite o n\u00famero do processo';
 
 	},
 
@@ -59,7 +78,7 @@ var AcrobatJs = {
 				continue;
 			}
 			root.insertChild(bm, chd.length);
-			names[bm.pageNum][bm.name] = true;
+			names[bm.pageNum][bm.name] = !0;
 		}
 
 		this.pageNum = returnTo;
@@ -79,8 +98,7 @@ var AcrobatJs = {
 			cUser: cLabel,
 			cParent: "Tools", 
 			cEnable: cEnable,
-			cExec: cExec,
-			nPos: 0 
+			cExec: cExec
 		});
 		
 		app.addToolButton({
@@ -93,46 +111,22 @@ var AcrobatJs = {
 
 		app.addMenuItem({ 
 			cName: "addCert6", 
-			cUser: "Certidão - Status &6",
+			cUser: "Certid\u00e3o - Status &6",
 			cParent: "Tools", 
 			cEnable: cEnable,
-			cExec: "AcrobatJs.addCert6();",
-			nPos: 0 
+			cExec: "AcrobatJs.addCert6();"
 		});
 
 		app.addMenuItem({ 
 			cName: "addCert1", 
-			cUser: "Certidão - Status &1",
+			cUser: "Certid\u00e3o - Status &1",
 			cParent: "Tools", 
 			cEnable: cEnable,
-			cExec: "AcrobatJs.insertDoc(AcrobatJs.paths.cert1);",
-			nPos: 0 
-		});		
+			cExec: "AcrobatJs.insertDoc(AcrobatJs.paths.cert1);"
+		});
 
 	}
 
-}
-
-var Utils = {
-
-	stick : function(func) {
-		return function() {
-			return func.apply(event.target, Array.prototype.slice.call(arguments));
-		}
-	},
-
-	stickAll : function(obj) {
-		for (var key in obj) {
-			if(Utils.isFunction(obj[key])){
-				obj[key] = Utils.stick(obj[key]);
-			}
-		}
-	},
-
-	isFunction : function(obj) {
-		return Object.prototype.toString.call(obj) == '[object Function]';
-	}
-
-}
+};
 
 AcrobatJs.initialize();
