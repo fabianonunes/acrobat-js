@@ -26,8 +26,8 @@ var Utils = {
 var AcrobatJs = {
 
 	paths : {
-		cert1 : '/r/APLICATIVOS/Certidoes/status_1.pdf',
-		cert6 : '/r/APLICATIVOS/Certidoes/status_6.pdf'
+		1 : '/r/APLICATIVOS/Certidoes/status_1.pdf',
+		6 : '/r/APLICATIVOS/Certidoes/status_6.pdf'
 	},
 	
 	insertDoc : app.trustedFunction(function(path){
@@ -40,11 +40,13 @@ var AcrobatJs = {
 		app.endPriv();
 	}),
 
-	addCert6 : function(){
+	addCert : function(status){
 
-		AcrobatJs.insertDoc(AcrobatJs.paths.cert6);
+		console.println(AcrobatJs.paths[status]);
 
-		var f = this.getField('numproc')
+		AcrobatJs.insertDoc(AcrobatJs.paths[status]);
+
+		var f = this.getField('numproc_' + status)
 			, mask = /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/;
 
 		f.value = mask.exec(this.documentFileName) || 'Digite o n\u00famero do processo';
@@ -114,7 +116,7 @@ app.addMenuItem({
 	cUser: "Certid\u00e3o - Status &6",
 	cParent: "Tools", 
 	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert6();"
+	cExec: "AcrobatJs.addCert(6);"
 });
 
 app.addMenuItem({ 
@@ -122,6 +124,6 @@ app.addMenuItem({
 	cUser: "Certid\u00e3o - Status &1",
 	cParent: "Tools", 
 	cEnable: cEnable,
-	cExec: "AcrobatJs.insertDoc(AcrobatJs.paths.cert1);"
+	cExec: "AcrobatJs.addCert(1);"
 });
 
