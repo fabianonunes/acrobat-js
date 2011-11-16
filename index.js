@@ -42,8 +42,6 @@ var AcrobatJs = {
 
 	addCert : function(status){
 
-		console.println(AcrobatJs.paths[status]);
-
 		AcrobatJs.insertDoc(AcrobatJs.paths[status]);
 
 		var f = this.getField('numproc_' + status)
