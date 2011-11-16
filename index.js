@@ -83,50 +83,45 @@ var AcrobatJs = {
 
 		this.pageNum = returnTo;
 
-	},
-
-	initialize : function(){
-		
-		Utils.stickAll(AcrobatJs);
-
-		var cEnable = "event.rc = (event.target != null);"
-			, cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);"
-			, cLabel = "Ordenar &Marcadores";
-
-		app.addMenuItem({ 
-			cName: "sortBookmarks", 
-			cUser: cLabel,
-			cParent: "Tools", 
-			cEnable: cEnable,
-			cExec: cExec
-		});
-		
-		app.addToolButton({
-			cName: "sortBkmButton", 
-			cLabel: cLabel,
-			cEnable: cEnable,
-			cExec: cExec,
-			nPos: -1 
-		});
-
-		app.addMenuItem({ 
-			cName: "addCert6", 
-			cUser: "Certid\u00e3o - Status &6",
-			cParent: "Tools", 
-			cEnable: cEnable,
-			cExec: "AcrobatJs.addCert6();"
-		});
-
-		app.addMenuItem({ 
-			cName: "addCert1", 
-			cUser: "Certid\u00e3o - Status &1",
-			cParent: "Tools", 
-			cEnable: cEnable,
-			cExec: "AcrobatJs.insertDoc(AcrobatJs.paths.cert1);"
-		});
-
 	}
 
 };
 
-AcrobatJs.initialize();
+Utils.stickAll(AcrobatJs);
+
+var cEnable = "event.rc = (event.target != null);"
+	, cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);"
+	, cLabel = "Ordenar &Marcadores";
+
+app.addMenuItem({ 
+	cName: "sortBookmarks", 
+	cUser: cLabel,
+	cParent: "Tools", 
+	cEnable: cEnable,
+	cExec: cExec
+});
+
+app.addToolButton({
+	cName: "sortBkmButton", 
+	cLabel: cLabel,
+	cEnable: cEnable,
+	cExec: cExec,
+	nPos: -1 
+});
+
+app.addMenuItem({ 
+	cName: "addCert6", 
+	cUser: "Certid\u00e3o - Status &6",
+	cParent: "Tools", 
+	cEnable: cEnable,
+	cExec: "AcrobatJs.addCert6();"
+});
+
+app.addMenuItem({ 
+	cName: "addCert1", 
+	cUser: "Certid\u00e3o - Status &1",
+	cParent: "Tools", 
+	cEnable: cEnable,
+	cExec: "AcrobatJs.insertDoc(AcrobatJs.paths.cert1);"
+});
+
