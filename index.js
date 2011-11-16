@@ -26,8 +26,8 @@ var Utils = {
 var AcrobatJs = {
 
 	paths : {
-		cert1 : '/r/APLICATIVOS/Certidoes/status1.pdf',
-		cert6 : '/r/APLICATIVOS/Certidoes/status6.pdf'
+		cert1 : '/r/APLICATIVOS/Certidoes/status_1.pdf',
+		cert6 : '/r/APLICATIVOS/Certidoes/status_6.pdf'
 	},
 	
 	insertDoc : app.trustedFunction(function(path){
