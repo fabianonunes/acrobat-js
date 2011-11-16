@@ -119,11 +119,28 @@ app.addMenuItem({
 	cExec: "AcrobatJs.addCert(6);"
 });
 
+app.addToolButton({
+	cName: "addCert6Button", 
+	cLabel: "Certid\u00e3o - Status 6",
+	cEnable: cEnable,
+	cExec: "AcrobatJs.addCert(6);",
+	nPos: -1 
+});
+
 app.addMenuItem({ 
 	cName: "addCert1", 
 	cUser: "Certid\u00e3o - Status &1",
 	cParent: "Tools", 
 	cEnable: cEnable,
 	cExec: "AcrobatJs.addCert(1);"
+});
+
+app.addToolButton({
+	cName: "addCert1Button", 
+	cLabel: "Certid\u00e3o - Status 1",
+	cEnable: cEnable,
+	cExec: "AcrobatJs.addCert(1);",
+	nPos: -1 
+
 });
 
