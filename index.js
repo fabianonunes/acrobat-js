@@ -6,21 +6,22 @@
 
 var Utils = {
 
-	stick : function(func) {
-		return function() {
+	stick : function (func) {
+		return function () {
 			return func.apply(event.target, Array.prototype.slice.call(arguments));
 		};
 	},
 
-	stickAll : function(obj) {
-		for (var b in obj) {
-			if (Utils.isFunction(obj[b])){
+	stickAll : function (obj) {
+		var b;
+		for (b in obj) {
+			if (Utils.isFunction(obj[b])) {
 				obj[b] = Utils.stick(obj[b]);
 			}
 		}
 	},
 
-	isFunction : function(obj) {
+	isFunction : function (obj) {
 		return Object.prototype.toString.call(obj) === '[object Function]';
 	}
 
@@ -33,18 +34,18 @@ var AcrobatJs = {
 		1 : '/r/APLICATIVOS/Certidoes/status_1.pdf',
 		6 : '/r/APLICATIVOS/Certidoes/status_6.pdf'
 	},
-	
-	insertDoc : app.trustedFunction(function(path) {
+
+	insertDoc : app.trustedFunction(function (path) {
 		app.beginPriv();
-		this.insertPages({ 
-			nPage: this.numPages-1, 
+		this.insertPages({
+			nPage: this.numPages - 1,
 			cPath: path
 		});
-		this.pageNum = this.numPages-1;
+		this.pageNum = this.numPages - 1;
 		app.endPriv();
 	}),
 
-	addCert : function(status) {
+	addCert : function (status) {
 
 		AcrobatJs.insertDoc(AcrobatJs.paths[status]);
 
@@ -55,16 +56,19 @@ var AcrobatJs = {
 
 	},
 
-	sortBookmarks : function(root) {
+	sortBookmarks : function (root) {
 
 		var returnTo = this.pageNum,
 			chd = root.children,
 			names = {},
-			key, bm;
+			key,
+			bm;
 
-		if(!chd) { return; }
+		if (!chd) { return; }
 
-		for(key = 0; bm = chd[key++];) {
+
+		for (key = 0; key < chd.length; key += 1) {
+			bm = chd[key];
 			bm.execute();
 			bm.pageNum = this.pageNum;
 			bm.order = key;
@@ -74,17 +78,18 @@ var AcrobatJs = {
 			}
 		}
 
-		chd.sort(function(a, b) {
+		chd.sort(function (a, b) {
 			return a.pageNum - b.pageNum || a.order - b.order;
 		});
 
-		for(key = 0; bm = chd[key++];) {
-			if(names[bm.pageNum][bm.name] && !bm.children) {
+		for (key = 0; key < chd.length; key += 1) {
+			bm = chd[key];
+			if (names[bm.pageNum][bm.name] && !bm.children) {
 				bm.remove();
-				continue;
+			} else {
+				root.insertChild(bm, chd.length);
+				names[bm.pageNum][bm.name] = true;
 			}
-			root.insertChild(bm, chd.length);
-			names[bm.pageNum][bm.name] = !0;
 		}
 
 		this.pageNum = returnTo;
@@ -99,52 +104,51 @@ var cEnable = "event.rc = (event.target != null);",
 	cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);",
 	cLabel = "Ordenar &Marcadores";
 
-app.addMenuItem({ 
-	cName: "sortBookmarks", 
+app.addMenuItem({
+	cName: "sortBookmarks",
 	cUser: cLabel,
-	cParent: "Tools", 
+	cParent: "Tools",
 	cEnable: cEnable,
 	cExec: cExec
 });
 
 app.addToolButton({
-	cName: "sortBkmButton", 
+	cName: "sortBkmButton",
 	cLabel: cLabel,
 	cEnable: cEnable,
 	cExec: cExec,
-	nPos: -1 
+	nPos: -1
 });
 
-app.addMenuItem({ 
-	cName: "addCert6", 
+app.addMenuItem({
+	cName: "addCert6",
 	cUser: "Certid\u00e3o - Status &6",
-	cParent: "Tools", 
+	cParent: "Tools",
 	cEnable: cEnable,
 	cExec: "AcrobatJs.addCert(6);"
 });
 
 app.addToolButton({
-	cName: "addCert6Button", 
+	cName: "addCert6Button",
 	cLabel: "Certid\u00e3o - Status 6",
 	cEnable: cEnable,
 	cExec: "AcrobatJs.addCert(6);",
-	nPos: -1 
+	nPos: -1
 });
 
-app.addMenuItem({ 
-	cName: "addCert1", 
+app.addMenuItem({
+	cName: "addCert1",
 	cUser: "Certid\u00e3o - Status &1",
-	cParent: "Tools", 
+	cParent: "Tools",
 	cEnable: cEnable,
 	cExec: "AcrobatJs.addCert(1);"
 });
 
 app.addToolButton({
-	cName: "addCert1Button", 
+	cName: "addCert1Button",
 	cLabel: "Certid\u00e3o - Status 1",
 	cEnable: cEnable,
 	cExec: "AcrobatJs.addCert(1);",
-	nPos: -1 
-
+	nPos: -1
 });
 
