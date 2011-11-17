@@ -9,15 +9,19 @@ var Utils = {
 	stick : function(func) {
 		return function() {
 			return func.apply(event.target, Array.prototype.slice.call(arguments));
-		}
+		};
 	},
 
 	stickAll : function(obj) {
-		for (var b in obj) Utils.isFunction(obj[b]) && (obj[b] = Utils.stick(obj[b]))
+		for (var b in obj) {
+			if (Utils.isFunction(obj[b])){
+				obj[b] = Utils.stick(obj[b]);
+			}
+		}
 	},
 
 	isFunction : function(obj) {
-		return Object.prototype.toString.call(obj) == '[object Function]';
+		return Object.prototype.toString.call(obj) === '[object Function]';
 	}
 
 };
@@ -30,7 +34,7 @@ var AcrobatJs = {
 		6 : '/r/APLICATIVOS/Certidoes/status_6.pdf'
 	},
 	
-	insertDoc : app.trustedFunction(function(path){
+	insertDoc : app.trustedFunction(function(path) {
 		app.beginPriv();
 		this.insertPages({ 
 			nPage: this.numPages-1, 
@@ -40,12 +44,12 @@ var AcrobatJs = {
 		app.endPriv();
 	}),
 
-	addCert : function(status){
+	addCert : function(status) {
 
 		AcrobatJs.insertDoc(AcrobatJs.paths[status]);
 
-		var f = this.getField('numproc_' + status)
-			, mask = /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/;
+		var f = this.getField('numproc_' + status),
+			mask = /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/;
 
 		f.value = mask.exec(this.documentFileName) || 'Digite o n\u00famero do processo';
 
@@ -53,27 +57,29 @@ var AcrobatJs = {
 
 	sortBookmarks : function(root) {
 
-		var returnTo = this.pageNum
-			, chd = root.children
-			, names = {}
-			, key, bm;
+		var returnTo = this.pageNum,
+			chd = root.children,
+			names = {},
+			key, bm;
 
 		if(!chd) { return; }
 
-		for(key = 0; bm = chd[key++];){
+		for(key = 0; bm = chd[key++];) {
 			bm.execute();
 			bm.pageNum = this.pageNum;
 			bm.order = key;
 			names[bm.pageNum] = {};
-			bm.children && AcrobatJs.sortBookmarks(bm);
+			if (bm.children) {
+				AcrobatJs.sortBookmarks(bm);
+			}
 		}
 
-		chd.sort(function(a, b){
+		chd.sort(function(a, b) {
 			return a.pageNum - b.pageNum || a.order - b.order;
 		});
 
-		for(key = 0; bm = chd[key++];){
-			if(names[bm.pageNum][bm.name] && !bm.children){
+		for(key = 0; bm = chd[key++];) {
+			if(names[bm.pageNum][bm.name] && !bm.children) {
 				bm.remove();
 				continue;
 			}
@@ -89,9 +95,9 @@ var AcrobatJs = {
 
 Utils.stickAll(AcrobatJs);
 
-var cEnable = "event.rc = (event.target != null);"
-	, cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);"
-	, cLabel = "Ordenar &Marcadores";
+var cEnable = "event.rc = (event.target != null);",
+	cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);",
+	cLabel = "Ordenar &Marcadores";
 
 app.addMenuItem({ 
 	cName: "sortBookmarks", 
