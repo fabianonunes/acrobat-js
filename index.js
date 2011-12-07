@@ -9,7 +9,7 @@ var Utils = {
 	stick : function(func) {
 		return function() {
 			return func.apply(event.target, Array.prototype.slice.call(arguments));
-		}
+		};
 	},
 
 	stickAll : function(obj) {
@@ -30,7 +30,12 @@ var AcrobatJs = {
 		6 : '/r/APLICATIVOS/Certidoes/status_6.pdf'
 	},
 
-	insertDoc : app.trustedFunction(function(path){
+	masks : {
+		processo : /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/,
+		peticao : /\d{1,8}-\d{4}\.\d/
+	},
+
+	insertDoc : app.trustedFunction(function (path) {
 		app.beginPriv();
 		this.insertPages({
 			nPage: this.numPages-1,
@@ -42,17 +47,17 @@ var AcrobatJs = {
 		app.endPriv();
 	}),
 
-	addCert : function(status){
+	addCert : function (status, tipo) {
 
 		AcrobatJs.insertDoc(AcrobatJs.paths[status]);
 
-		var f = this.getField('numproc_' + status)
-			, mask = /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/;
+		var f = this.getField('numproc_' + status),
+			mask = AcrobatJs.masks[tipo];
 
 		f.value = mask.exec(this.documentFileName) || 'Digite o n\u00famero do processo';
 
 		var d = new Date();
-		var s = this.getField('date')
+		var s = this.getField('date');
 
 		var meses = {
 			0 : "janeiro",
@@ -75,27 +80,29 @@ var AcrobatJs = {
 
 	sortBookmarks : function(root) {
 
-		var returnTo = this.pageNum
-			, chd = root.children
-			, names = {}
-			, key, bm;
+		var returnTo = this.pageNum,
+			chd = root.children,
+			names = {},
+			key, bm;
 
 		if(!chd) { return; }
 
-		for(key = 0; bm = chd[key++];){
+		for(key = 0; (bm = chd[key++]);) {
 			bm.execute();
 			bm.pageNum = this.pageNum;
 			bm.order = key;
 			names[bm.pageNum] = {};
-			bm.children && AcrobatJs.sortBookmarks(bm);
+			if (bm.children) {
+				AcrobatJs.sortBookmarks(bm);
+			}
 		}
 
-		chd.sort(function(a, b){
+		chd.sort(function(a, b) {
 			return a.pageNum - b.pageNum || a.order - b.order;
 		});
 
-		for(key = 0; bm = chd[key++];){
-			if(names[bm.pageNum][bm.name] && !bm.children){
+		for(key = 0; (bm = chd[key++]);) {
+			if(names[bm.pageNum][bm.name] && !bm.children) {
 				bm.remove();
 				continue;
 			}
@@ -111,9 +118,9 @@ var AcrobatJs = {
 
 Utils.stickAll(AcrobatJs);
 
-var cEnable = "event.rc = (event.target != null);"
-	, cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);"
-	, cLabel = "Ordenar &Marcadores";
+var cEnable = "event.rc = (event.target != null);",
+	cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);",
+	cLabel = "Ordenar &Marcadores";
 
 app.addMenuItem({
 	cName: "sortBookmarks",
@@ -136,14 +143,14 @@ app.addMenuItem({
 	cUser: "Certid\u00e3o - Status &6",
 	cParent: "Tools",
 	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert(6);"
+	cExec: "AcrobatJs.addCert(6, 'processo');"
 });
 
 app.addToolButton({
 	cName: "addCert6Button",
 	cLabel: "Certid\u00e3o - Status 6",
 	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert(6);",
+	cExec: "AcrobatJs.addCert(6, 'processo');",
 	nPos: -1
 });
 
@@ -152,15 +159,30 @@ app.addMenuItem({
 	cUser: "Certid\u00e3o - Status &1",
 	cParent: "Tools",
 	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert(1);"
+	cExec: "AcrobatJs.addCert(1, 'processo');"
 });
 
 app.addToolButton({
 	cName: "addCert1Button",
 	cLabel: "Certid\u00e3o - Status 1",
 	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert(1);",
+	cExec: "AcrobatJs.addCert(1, 'processo');",
 	nPos: -1
+});
 
+app.addMenuItem({
+	cName: "addCert2",
+	cUser: "Certid\u00e3o - Status &2",
+	cParent: "Tools",
+	cEnable: cEnable,
+	cExec: "AcrobatJs.addCert(2, 'peticao');"
+});
+
+app.addToolButton({
+	cName: "addCert2Button",
+	cLabel: "Certid\u00e3o - Status 2",
+	cEnable: cEnable,
+	cExec: "AcrobatJs.addCert(2, 'peticao');",
+	nPos: -1
 });
 
