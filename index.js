@@ -58,8 +58,8 @@ var AcrobatJs = {
 		AcrobatJs.insertDoc(AcrobatJs.paths[status]);
 
 		var f = this.getField('numproc_' + status),
-			mask = AcrobatJs.masks[tipo],
-			replace = AcrobatJs.masks.replace;
+			mask = AcrobatJs.masks[tipo].mask,
+			replace = AcrobatJs.masks[tipo].replace;
 
 		if ( mask.test(this.documentFileName) ) {
 			f.value = this.documentFileName.replace(mask, replace);
