@@ -31,8 +31,14 @@ var AcrobatJs = {
 	},
 
 	masks : {
-		processo : /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/,
-		peticao : /\d{1,8}-\d{4}\.\d/
+		processo : {
+			mask : /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/,
+			replace : '$1'
+		},
+		peticao : {
+			mask : /(\d{1,8})(\d{4})(\d)/,
+			replace : '$1/$2.#3'
+		}
 	},
 
 	insertDoc : app.trustedFunction(function (path) {
@@ -52,9 +58,14 @@ var AcrobatJs = {
 		AcrobatJs.insertDoc(AcrobatJs.paths[status]);
 
 		var f = this.getField('numproc_' + status),
-			mask = AcrobatJs.masks[tipo];
+			mask = AcrobatJs.masks[tipo],
+			replace = AcrobatJs.masks.relace;
 
-		f.value = mask.exec(this.documentFileName) || 'Digite o n\u00famero do processo';
+		if ( mask.test(this.documentFileName) ) {
+			f.value = this.documentFileName.replace(mask, replace);
+		} else {
+			f.value = 'Digite o n\u00famero do processo';
+		}
 
 		var d = new Date();
 		var s = this.getField('date');
