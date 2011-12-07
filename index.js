@@ -32,12 +32,16 @@ var AcrobatJs = {
 
 	masks : {
 		processo : {
-			mask : /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/,
-			replace : '$1'
+			mask : /([1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4})/,
+			replace : function (str, p1) {
+				return p1;
+			}
 		},
 		peticao : {
 			mask : /(\d{1,8})(\d{4})(\d)/,
-			replace : '$1/$2.#3'
+			replace : function (str, p1, p2, p3) {
+				return p1 + '/' + p2 + '.' +p3 ;
+			}
 		}
 	},
 
@@ -59,10 +63,11 @@ var AcrobatJs = {
 
 		var f = this.getField('numproc_' + status),
 			mask = AcrobatJs.masks[tipo].mask,
-			replace = AcrobatJs.masks[tipo].replace;
+			replace = AcrobatJs.masks[tipo].replace,
+			match = this.documentFileName.match(mask);
 
-		if ( mask.test(this.documentFileName) ) {
-			f.value = this.documentFileName.replace(mask, replace);
+		if ( match ) {
+			f.value = replace.apply(replace, match);
 		} else {
 			f.value = 'Digite o n\u00famero do processo';
 		}
