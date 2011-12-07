@@ -6,23 +6,18 @@
 
 var Utils = {
 
-	stick : function (func) {
-		return function () {
+	stick : function(func) {
+		return function() {
 			return func.apply(event.target, Array.prototype.slice.call(arguments));
-		};
-	},
-
-	stickAll : function (obj) {
-		var b;
-		for (b in obj) {
-			if (Utils.isFunction(obj[b])) {
-				obj[b] = Utils.stick(obj[b]);
-			}
 		}
 	},
 
-	isFunction : function (obj) {
-		return Object.prototype.toString.call(obj) === '[object Function]';
+	stickAll : function(obj) {
+		for (var b in obj) Utils.isFunction(obj[b]) && (obj[b] = Utils.stick(obj[b]))
+	},
+
+	isFunction : function(obj) {
+		return Object.prototype.toString.call(obj) == '[object Function]';
 	}
 
 };
@@ -35,61 +30,77 @@ var AcrobatJs = {
 		6 : '/r/APLICATIVOS/Certidoes/status_6.pdf'
 	},
 
-	insertDoc : app.trustedFunction(function (path) {
+	insertDoc : app.trustedFunction(function(path){
 		app.beginPriv();
 		this.insertPages({
-			nPage: this.numPages - 1,
+			nPage: this.numPages-1,
 			cPath: path
 		});
-		this.pageNum = this.numPages - 1;
+		try {
+			this.pageNum = this.numPages-1;
+		} catch (e) {}
 		app.endPriv();
 	}),
 
-	addCert : function (status) {
+	addCert : function(status){
 
 		AcrobatJs.insertDoc(AcrobatJs.paths[status]);
 
-		var f = this.getField('numproc_' + status),
-			mask = /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/;
+		var f = this.getField('numproc_' + status)
+			, mask = /[1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/;
 
 		f.value = mask.exec(this.documentFileName) || 'Digite o n\u00famero do processo';
 
+		var d = new Date();
+		var s = this.getField('date')
+
+		var meses = {
+			0 : "janeiro",
+			1 : "fevereiro",
+			2 : "mar\u00e7o",
+			3 : "abril",
+			4 : "maio",
+			5 : "junho",
+			6 : "julho",
+			7 : "agosto",
+			8 : "setembro",
+			9 : "outubro",
+			10 : "novembro",
+			11 : "dezembro"
+		};
+
+		s.value = d.getDate() +" de " + meses[d.getMonth()] + " de " + d.getFullYear() + ".";
+
 	},
 
-	sortBookmarks : function (root) {
+	sortBookmarks : function(root) {
 
-		var returnTo = this.pageNum,
-			chd = root.children,
-			names = {},
-			key,
-			bm;
+		var returnTo = this.pageNum
+			, chd = root.children
+			, names = {}
+			, key, bm;
 
-		if (!chd) { return; }
+		if(!chd) { return; }
 
-
-		for (key = 0; key < chd.length; key += 1) {
-			bm = chd[key];
+		for(key = 0; bm = chd[key++];){
 			bm.execute();
 			bm.pageNum = this.pageNum;
 			bm.order = key;
 			names[bm.pageNum] = {};
-			if (bm.children) {
-				AcrobatJs.sortBookmarks(bm);
-			}
+			bm.children && AcrobatJs.sortBookmarks(bm);
 		}
 
-		chd.sort(function (a, b) {
+		chd.sort(function(a, b){
 			return a.pageNum - b.pageNum || a.order - b.order;
 		});
 
-		for (key = 0; key < chd.length; key += 1) {
-			bm = chd[key];
-			if (names[bm.pageNum][bm.name] && !bm.children) {
+		for(key = 0; bm = chd[key++];){
+			if(names[bm.pageNum][bm.name] && !bm.children){
 				bm.remove();
-			} else {
-				root.insertChild(bm, chd.length);
-				names[bm.pageNum][bm.name] = true;
+				continue;
 			}
+			root.insertChild(bm, chd.length);
+			names[bm.pageNum][bm.name] = !0;
 		}
 
 		this.pageNum = returnTo;
@@ -100,9 +111,9 @@ var AcrobatJs = {
 
 Utils.stickAll(AcrobatJs);
 
-var cEnable = "event.rc = (event.target != null);",
-	cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);",
-	cLabel = "Ordenar &Marcadores";
+var cEnable = "event.rc = (event.target != null);"
+	, cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);"
+	, cLabel = "Ordenar &Marcadores";
 
 app.addMenuItem({
 	cName: "sortBookmarks",
@@ -150,5 +161,6 @@ app.addToolButton({
 	cEnable: cEnable,
 	cExec: "AcrobatJs.addCert(1);",
 	nPos: -1
+
 });
 
