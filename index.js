@@ -59,7 +59,7 @@ var AcrobatJs = {
 
 		var f = this.getField('numproc_' + status),
 			mask = AcrobatJs.masks[tipo],
-			replace = AcrobatJs.masks.relace;
+			replace = AcrobatJs.masks.replace;
 
 		if ( mask.test(this.documentFileName) ) {
 			f.value = this.documentFileName.replace(mask, replace);
