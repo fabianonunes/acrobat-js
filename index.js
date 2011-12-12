@@ -13,7 +13,11 @@ var Utils = {
 	},
 
 	stickAll : function(obj) {
-		for (var b in obj) Utils.isFunction(obj[b]) && (obj[b] = Utils.stick(obj[b]))
+		for (var b in obj) {
+			if ( Utils.isFunction(obj[b]) ) {
+				obj[b] = Utils.stick(obj[b]);
+			}
+		}
 	},
 
 	isFunction : function(obj) {
@@ -22,25 +26,13 @@ var Utils = {
 
 };
 
-
 var AcrobatJs = {
-
-	paths : {
-		1 : '/r/APLICATIVOS/Certidoes/status_1.pdf',
-		6 : '/r/APLICATIVOS/Certidoes/status_6.pdf'
-	},
 
 	masks : {
 		processo : {
-			mask : /([1-9]\d{0,6}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4})/,
+			mask : /(([0-9]{1,7})-([0-9]{2})\.([0-9]{4})\.([0-9])\.([0-9]{2})\.([0-9]{4}))/,
 			replace : function (str, p1) {
 				return p1;
-			}
-		},
-		peticao : {
-			mask : /(\d{1,8})(\d{4})(\d)/,
-			replace : function (str, p1, p2, p3) {
-				return p1 + '/' + p2 + '.' +p3 ;
 			}
 		}
 	},
@@ -48,8 +40,8 @@ var AcrobatJs = {
 	insertDoc : app.trustedFunction(function (path) {
 		app.beginPriv();
 		this.insertPages({
-			nPage: this.numPages-1,
-			cPath: path
+			nPage : this.numPages-1,
+			cPath : path
 		});
 		try {
 			this.pageNum = this.numPages-1;
@@ -57,14 +49,16 @@ var AcrobatJs = {
 		app.endPriv();
 	}),
 
-	addCert : function (status, tipo) {
+	addCert : function (status, path, tipo) {
 
-		AcrobatJs.insertDoc(AcrobatJs.paths[status]);
+		AcrobatJs.insertDoc(path);
 
-		var f = this.getField('numproc_' + status),
-			mask = AcrobatJs.masks[tipo].mask,
+		tipo = tipo || 'processo';
+
+		var f       = this.getField('numproc_' + status),
+			mask    = AcrobatJs.masks[tipo].mask,
 			replace = AcrobatJs.masks[tipo].replace,
-			match = this.documentFileName.match(mask);
+			match   = this.documentFileName.match(mask);
 
 		if ( match ) {
 			f.value = replace.apply(replace, match);
@@ -73,40 +67,91 @@ var AcrobatJs = {
 		}
 
 		var d = new Date();
-		var s = this.getField('date');
+		var s = this.getField('date_' + status);
 
-		var meses = {
-			0 : "janeiro",
-			1 : "fevereiro",
-			2 : "mar\u00e7o",
-			3 : "abril",
-			4 : "maio",
-			5 : "junho",
-			6 : "julho",
-			7 : "agosto",
-			8 : "setembro",
-			9 : "outubro",
-			10 : "novembro",
-			11 : "dezembro"
-		};
+		var meses = 'janeiro fevereiro mar\u00e7o abril maio junho julho agosto setembro outubro novembro dezembro'.split(' ');
 
-		s.value = d.getDate() +" de " + meses[d.getMonth()] + " de " + d.getFullYear() + ".";
+		s.value = d.getDate() +' de ' + meses[d.getMonth()] + ' de ' + d.getFullYear() + '.';
 
 	},
+
+	launchQuery : app.trustedFunction(function () {
+
+		app.beginPriv();
+
+		var mask         = AcrobatJs.masks.processo.mask,
+			processo     = this.documentFileName,
+			doc          = processo.match(mask),
+			REFERER      = 'ext02.tst.jus.br',
+			DOWNLOAD_URL = '/pls/ap01/ap_proc100.dados_processos';
+
+		if(doc === null){
+			return;
+		}
+
+		processo = {
+			num_proc  : doc[2],
+			dig_proc  : doc[3],
+			ano_proc  : doc[4],
+			num_orgao : doc[5],
+			TRT_proc  : doc[6],
+			vara_proc : doc[7]
+		};
+
+		var q = _.map(processo, function(v,k){return k+'='+v;}).join('&'),
+		link = 'http://' + REFERER + DOWNLOAD_URL + '?' + q;
+
+		app.launchURL(link);
+
+		app.endPriv();
+
+	}),
+
+	launchEsij : app.trustedFunction(function () {
+
+		app.beginPriv();
+
+		var mask         = AcrobatJs.masks.processo.mask,
+			processo     = this.documentFileName,
+			doc          = processo.match(mask),
+			REFERER      = 'aplicacao6.tst.jus.br/esij',
+			DOWNLOAD_URL = '/ConsultarProcesso.do';
+
+		if(doc === null){
+			return;
+		}
+
+		processo = {
+			consultarNumeracao : 'Consultar',
+			numProc            : doc[2],
+			digito             : doc[3],
+			anoProc            : doc[4],
+			justica            : doc[5],
+			numTribunal        : doc[6],
+			numVara            : doc[7],
+			codigoBarra        : ''
+		};
+
+		var q = _.map(processo, function(v,k){return k+'='+v;}).join('&'),
+		link = 'http://' + REFERER + DOWNLOAD_URL + '?' + q;
+
+		app.launchURL(link);
+
+	}),
 
 	sortBookmarks : function(root) {
 
 		var returnTo = this.pageNum,
-			chd = root.children,
-			names = {},
+			chd      = root.children,
+			names    = {},
 			key, bm;
 
 		if(!chd) { return; }
 
 		for(key = 0; (bm = chd[key++]);) {
 			bm.execute();
-			bm.pageNum = this.pageNum;
-			bm.order = key;
+			bm.pageNum        = this.pageNum;
+			bm.order          = key;
 			names[bm.pageNum] = {};
 			if (bm.children) {
 				AcrobatJs.sortBookmarks(bm);
@@ -134,71 +179,34 @@ var AcrobatJs = {
 
 Utils.stickAll(AcrobatJs);
 
-var cEnable = "event.rc = (event.target != null);",
-	cExec = "AcrobatJs.sortBookmarks(this.bookmarkRoot);",
-	cLabel = "Ordenar &Marcadores";
+var breaker = {};
 
-app.addMenuItem({
-	cName: "sortBookmarks",
-	cUser: cLabel,
-	cParent: "Tools",
-	cEnable: cEnable,
-	cExec: cExec
-});
+var _ = {
+	each : function(obj, iterator, context) {
+		if (obj == null) return;
+		if (obj.length === +obj.length) {
+			for (var i = 0, l = obj.length; i < l; i++) {
+				if (i in obj && iterator.call(context, obj[i], i, obj) === breaker) return;
+			}
+		} else {
+			for (var key in obj) {
+				if (Object.prototype.hasOwnProperty.call(obj, key)) {
+					if (iterator.call(context, obj[key], key, obj) === breaker) return;
+				}
+			}
+		}
+	},
+	map : function (obj, iterator, context) {
 
-app.addToolButton({
-	cName: "sortBkmButton",
-	cLabel: cLabel,
-	cEnable: cEnable,
-	cExec: cExec,
-	nPos: -1
-});
+		var results = [];
+		if (!obj) { return results; }
 
-app.addMenuItem({
-	cName: "addCert6",
-	cUser: "Certid\u00e3o - Status &6",
-	cParent: "Tools",
-	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert(6, 'processo');"
-});
+		_.each(obj, function(value, index, list) {
+			results[results.length] = iterator.call(context, value, index, list);
+		});
 
-app.addToolButton({
-	cName: "addCert6Button",
-	cLabel: "Certid\u00e3o - Status 6",
-	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert(6, 'processo');",
-	nPos: -1
-});
+		return results;
 
-app.addMenuItem({
-	cName: "addCert1",
-	cUser: "Certid\u00e3o - Status &1",
-	cParent: "Tools",
-	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert(1, 'processo');"
-});
-
-app.addToolButton({
-	cName: "addCert1Button",
-	cLabel: "Certid\u00e3o - Status 1",
-	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert(1, 'processo');",
-	nPos: -1
-});
-
-app.addMenuItem({
-	cName: "addCert2",
-	cUser: "Certid\u00e3o - Status &2",
-	cParent: "Tools",
-	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert(2, 'peticao');"
-});
-
-app.addToolButton({
-	cName: "addCert2Button",
-	cLabel: "Certid\u00e3o - Status 2",
-	cEnable: cEnable,
-	cExec: "AcrobatJs.addCert(2, 'peticao');",
-	nPos: -1
-});
+	}
+};
 
