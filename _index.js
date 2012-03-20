@@ -82,6 +82,7 @@ var AcrobatJs = {
 	insertDoc : app.trustedFunction(function (doc, path) {
 		app.beginPriv()
 
+
 		doc.insertPages({
 			nPage : doc.numPages-1,
 			cPath : path
@@ -97,9 +98,9 @@ var AcrobatJs = {
 		app.beginPriv()
 
 		var fileName = this.documentFileName.replace('.pdf', '') + '_status' + status + '.pdf'
-
 		var doc = app.newDoc()
-		AcrobatJs.addCert(status, path, tipo, doc)
+
+		AcrobatJs.addCert(status, path, tipo, doc, fileName)
 		doc.deletePages()
 		doc.saveAs(fileName)
 		// doc.closeDoc()
@@ -107,9 +108,10 @@ var AcrobatJs = {
 		app.endPriv()
 	}),
 
-	addCert : function (status, path, tipo, doc) {
+	addCert : function (status, path, tipo, doc, filename) {
 
 		doc = doc || this
+		filename = filename || doc.documentFileName
 
 		AcrobatJs.insertDoc(doc, path)
 
@@ -122,7 +124,7 @@ var AcrobatJs = {
 
 			var mask    = AcrobatJs.masks[tipo].mask,
 				replace = AcrobatJs.masks[tipo].replace,
-				match   = doc.documentFileName.match(mask)
+				match   = filename.match(mask)
 
 			if ( match ) {
 				f.value = replace.apply(replace, match)

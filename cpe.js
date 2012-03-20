@@ -4,12 +4,12 @@ var _config = {
 	paths : {
 		1 : '/r/APLICATIVOS/Certidoes/status_1.pdf',
 		6 : '/r/APLICATIVOS/Certidoes/status_6.pdf',
-		2 : '/c/status_7.pdf'
+		7 : '/c/status_7.pdf'
 	},
 	commands : [ // Uncomment for enable
 		'sort',
-		// 'attachStatus6',
-		// 'inlineStatus2',
+		'attachStatus6',
+		'inlineStatus2',
 		'inlineStatus6',
 		'inlineStatus1'
 	],
