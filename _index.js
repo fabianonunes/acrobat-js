@@ -4,10 +4,14 @@
  Released under the BSD License.
 */
 
-/*global app*/
+/*global app,_config*/
 
-var breaker = {}
+var breaker = {}, idCounter = 0
 var _ = {
+	uniqueId : function(prefix) {
+		var id = idCounter++;
+		return prefix ? prefix + id : id;
+	},
 	each : function(obj, iterator, context) {
 		if (obj === null) { return }
 		if (obj.length === +obj.length) {
@@ -234,8 +238,37 @@ var AcrobatJs = {
 
 		this.pageNum = returnTo
 
-	}
+	},
 
+	addButton : function (cLabel, cExec) {
+		app.addToolButton({
+			cName: _.uniqueId('button'),
+			cLabel: cLabel,
+			cEnable: "event.rc = (event.target != null)",
+			cExec: cExec,
+			nPos: -1
+		})
+	},
+
+	addMenu : function (cLabel, cExec) {
+		app.addMenuItem({
+			cName: _.uniqueId('menu'),
+			cUser: cLabel,
+			cParent: "Tools",
+			cEnable: "event.rc = (event.target != null)",
+			cExec: cExec
+		})
+	},
+
+	start : function (config) {
+		var commands = config.commands, tools = config.tools
+		_.each(commands, function (command) {
+			command = tools[command]
+			AcrobatJs.addButton(command.cLabel, command.cExec)
+			AcrobatJs.addMenu(command.cLabel, command.cExec)
+		})
+	}
 }
 
 Utils.stickAll(AcrobatJs)
+AcrobatJs.start(_config)
