@@ -82,7 +82,6 @@ var AcrobatJs = {
 	insertDoc : app.trustedFunction(function (doc, path) {
 		app.beginPriv()
 
-
 		doc.insertPages({
 			nPage : doc.numPages-1,
 			cPath : path
@@ -108,7 +107,7 @@ var AcrobatJs = {
 		app.endPriv()
 	}),
 
-	addCert : function (status, path, tipo, doc, filename) {
+	addCert : function (status, path, tipo, doc, filename, datafile) {
 
 		doc = doc || this
 		filename = filename || doc.documentFileName
@@ -140,7 +139,17 @@ var AcrobatJs = {
 
 		}
 
+		if ( datafile ) {
+			AcrobatJs.importFields(datafile)
+		}
+
 	},
+
+	importFields : app.trustedFunction(function (file) {
+		app.beginPriv()
+		this.importTextData(file, 0)
+		app.endPriv()
+	}),
 
 	launchQuery : app.trustedFunction(function () {
 
