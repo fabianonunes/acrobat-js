@@ -2,8 +2,8 @@
 
 var _config = {
 	paths : {
-		6 : '/c/status_6.pdf',
-		8 : '/c/status_1.pdf'
+		1 : '/c/status_1.pdf',
+		6 : '/c/status_6.pdf'
 	},
 	commands : [
 		'ok',
@@ -14,7 +14,7 @@ var _config = {
 	tools : {
 		ok : {
 			cLabel : "Certid\u00e3o",
-			cExec : "AcrobatJs.addCert(7, _config.paths[7])",
+			cExec : "AcrobatJs.addCert(1, _config.paths[1])",
 			iconName : "page_white_go"
 		},
 		retorno : {
