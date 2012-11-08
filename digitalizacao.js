@@ -2,19 +2,23 @@
 
 var _config = {
 	paths : {
-		6 : '/p/status_6.pdf',
-		7 : '/p/status_7.pdf',
-		8 : '/p/status_8.pdf'
+		6 : '/c/status_6.pdf',
+		8 : '/c/status_1.pdf'
 	},
-	commands : [ 'ccadp', 'retorno', 'query', 'esij' ],
+	commands : [
+		'ok',
+		'retorno',
+		'query',
+		'esij'
+	],
 	tools : {
-		ccadp : {
+		ok : {
 			cLabel : "Certid\u00e3o",
 			cExec : "AcrobatJs.addCert(7, _config.paths[7])",
 			iconName : "page_white_go"
 		},
 		retorno : {
-			cLabel : "Certid\u00e3o - N\u00e3o cumprida",
+			cLabel : "Certid\u00e3o - Incompleto/Ilegivel",
 			cExec : "AcrobatJs.addCert(6, _config.paths[6])",
 			iconName : "document_mark_as_final"
 		},

@@ -4,7 +4,9 @@
  Released under the BSD License.
 */
 
-/*global app,_config*/
+/*global app,_config,util*/
+
+"use strict";
 
 var breaker = {}, idCounter = 0
 var _ = {
@@ -251,14 +253,22 @@ var AcrobatJs = {
 
 	},
 
-	addButton : function (cLabel, cExec) {
-		app.addToolButton({
-			cName: _.uniqueId('button'),
-			cLabel: cLabel,
-			cEnable: "event.rc = (event.target != null)",
-			cExec: cExec,
-			nPos: -1
-		})
+	addButton : function (cLabel, cExec, iconName) {
+
+		var options = {
+			cName   : _.uniqueId('button'),
+			cLabel  : cLabel,
+			cEnable : "event.rc = (event.target != null)",
+			cExec   : cExec,
+			nPos    : -1
+		}
+
+		if (iconName) {
+			options.oIcon = AcrobatJs.icons[iconName]
+		}
+
+		app.addToolButton(options)
+
 	},
 
 	addMenu : function (cLabel, cExec) {
@@ -271,14 +281,29 @@ var AcrobatJs = {
 		})
 	},
 
-	start : function (config) {
+	start : app.trustedFunction(function (config) {
+		app.beginPriv();
+
+		var atbPath = app.getPath({ cFolder : "javascript" });
+
+		var doc = app.openDoc({ cPath : atbPath + "/icons.pdf", bHidden : true });
+		AcrobatJs.icons = {}
+		_.each(doc.icons, function(icon) {
+			AcrobatJs.icons[icon.name] = util.iconStreamFromIcon( doc.getIcon(icon.name) );
+		})
+		doc.closeDoc();
+
+
 		var commands = config.commands, tools = config.tools
 		_.each(commands, function (command) {
 			command = tools[command]
-			AcrobatJs.addButton(command.cLabel, command.cExec)
+			AcrobatJs.addButton(command.cLabel, command.cExec, command.iconName)
 			AcrobatJs.addMenu(command.cLabel, command.cExec)
 		})
-	}
+
+
+		app.endPriv();
+	})
 }
 
 Utils.stickAll(AcrobatJs)
