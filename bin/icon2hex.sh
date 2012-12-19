@@ -1,3 +1,4 @@
 #!/bin/bash
 CMD=$@
-java -jar ./icon2hex.jar $*
+DIR=$(dirname "${BASH_SOURCE[0]}")
+java -jar $DIR/icon2hex.jar $*
