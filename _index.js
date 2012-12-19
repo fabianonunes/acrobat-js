@@ -4,7 +4,7 @@
  Released under the BSD License.
 */
 
-/*global app,_config,util*/
+/*global app,_config,util,globalIcons*/
 
 "use strict";
 
@@ -264,7 +264,8 @@ var AcrobatJs = {
 		}
 
 		if (iconName) {
-			options.oIcon = AcrobatJs.icons[iconName]
+			// options.oIcon = AcrobatJs.icons[iconName]
+			options.oIcon = globalIcons.getIcon(iconName)
 		}
 
 		app.addToolButton(options)
@@ -286,12 +287,12 @@ var AcrobatJs = {
 
 		var atbPath = app.getPath({ cFolder : "javascript" });
 
-		var doc = app.openDoc({ cPath : atbPath + "/icons.pdf", bHidden : true });
-		AcrobatJs.icons = {}
-		_.each(doc.icons, function(icon) {
-			AcrobatJs.icons[icon.name] = util.iconStreamFromIcon( doc.getIcon(icon.name) );
-		})
-		doc.closeDoc();
+		// var doc = app.openDoc({ cPath : atbPath + "/icons.pdf", bHidden : true });
+		// AcrobatJs.icons = {}
+		// _.each(doc.icons, function(icon) {
+		// 	AcrobatJs.icons[icon.name] = util.iconStreamFromIcon( doc.getIcon(icon.name) );
+		// })
+		// doc.closeDoc();
 
 
 		var commands = config.commands, tools = config.tools
